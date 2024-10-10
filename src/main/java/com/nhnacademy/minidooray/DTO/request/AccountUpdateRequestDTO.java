@@ -1,4 +1,4 @@
-package com.nhnacademy.minidooray.DTO;
+package com.nhnacademy.minidooray.DTO.request;
 
 import com.nhnacademy.minidooray.entity.State;
 import lombok.AllArgsConstructor;
@@ -6,13 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class AccountUpdateDTO {
+public class AccountUpdateRequestDTO {
 
     private String id;
+
+    private String password;
 
     private String email;
 

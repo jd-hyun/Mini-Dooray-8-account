@@ -1,6 +1,5 @@
 package com.nhnacademy.minidooray.DTO;
 
-import com.nhnacademy.minidooray.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

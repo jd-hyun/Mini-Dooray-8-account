@@ -13,13 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AccountCreateDTO {
 
-    @NotBlank
     private String id;
 
-    @NotBlank
     private String password;
 
-    @Email
-    @NotBlank
     private String email;
 }

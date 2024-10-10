@@ -11,12 +11,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountListDTO {
+public class AccountListDTO { //응답에는 필요없음
 
-    @NotBlank
     private String id;
 
-    @Email
-    @NotBlank
     private String email;
 }
