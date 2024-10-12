@@ -2,5 +2,10 @@ spring:
   application:
     name: minidooray
 
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+
 server:
   port: 8081  # 애플리케이션 포트 설정

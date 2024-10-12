@@ -5,14 +5,9 @@ import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -24,9 +19,11 @@ public class AccountController {
 
     // (GET) 모든 계정을 AccountListDTO로 반환
     @GetMapping
-    public List<AccountListDTO> getAllAccounts() { //ListDTO 바로 응답해줘도 됨
-        List<AccountListDTO> accounts = accountService.getAllAccounts();
-        return accounts;
+    public List<AccountListDTO> getAllAccounts(@RequestParam(required = false) String id) { //ListDTO 바로 응답해줘도 됨
+        if (id != null) {
+            return accountService.getAllActiveAccountsLike(id); // ID 검색
+        }
+        return accountService.getAllAccounts(); // 모든 계정 조회
     }
 
     // (GET) ID로 단일 회원 정보 조회
@@ -34,13 +31,6 @@ public class AccountController {
     public AccountDetailDTO getAccountById(@PathVariable Long id) { //id,password,email
         AccountDetailDTO accountDetailDTO = accountService.getAccountById(id);
         return accountDetailDTO;
-    }
-
-    // (GET) ID가 비슷한 회원 정보 리스트 조회
-    @GetMapping
-    public List<AccountListDTO> getAllActiveAccountsLike(@RequestParam String id) { //ListDTO 바로 응답해줘도 됨
-        List<AccountListDTO> accounts = accountService.getAllActiveAccountsLike(id);
-        return accounts;
     }
 
     // (POST) 회원 생성
