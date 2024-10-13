@@ -8,6 +8,7 @@ import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.entity.Account;
 import com.nhnacademy.minidooray.entity.Status;
 import com.nhnacademy.minidooray.repository.AccountRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,7 +47,7 @@ public class AccountServiceTest {
         assertEquals("id", result.getId()); //아이디 확인
         assertEquals("password", result.getPassword()); // 패스워드 확인
         assertEquals("example@example.org", result.getEmail()); //이메일 확인
-        verify(accountRepository, times(1)).findByLoginId("id"); //1L로 저장되었는지 확인
+        verify(accountRepository, times(1)).findByLoginId("id");
     }
 
     @Test
@@ -113,13 +114,14 @@ public class AccountServiceTest {
     }
 
     @Test
-    void testCreateAccount() {
+    void testCreateAccount1() {
         AccountCreateDTO createDTO = new AccountCreateDTO("id", "BCrypt encoded string", "example@example.org");
 
         accountService.createAccount(createDTO);
 
         verify(accountRepository, times(1)).save(any(Account.class));
     }
+
 
     @Test
     void testDeleteAccount() {
@@ -129,4 +131,65 @@ public class AccountServiceTest {
 
         verify(accountRepository, times(1)).deleteByLoginId(loginId);
     }
+
+
+    @Test
+    void testCreateAccount2() {
+        AccountCreateDTO accountCreateDTO = new AccountCreateDTO("id", "password1234", "example@example.org");
+
+        when(accountRepository.existsAccountsByLoginId(accountCreateDTO.getId())).thenReturn(true);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            accountService.createAccount(accountCreateDTO);
+        });
+
+        assertEquals("이미 있는 로그인 아이디입니다.", exception.getMessage());
+
+        verify(accountRepository, times(0)).save(any(Account.class));
+    }
+
+    @Test
+    void testUpdateAccount() {
+        // Given
+        String existingLoginId = "oldId";
+        String newLoginId = "id";
+
+        AccountUpdateRequestDTO updateRequestDTO = new AccountUpdateRequestDTO(newLoginId, "newPassword", "newEmail@example.org", Status.ACTIVE);
+        Account existingAccount = new Account(1L, existingLoginId, "oldPassword", "oldEmail@example.org", Status.INACTIVE);
+
+        when(accountRepository.findByLoginId(existingLoginId)).thenReturn(existingAccount);
+
+        when(accountRepository.existsAccountsByLoginId(newLoginId)).thenReturn(false);
+
+        AccountUpdateDTO updatedAccountDTO = accountService.updateAccount(existingLoginId, updateRequestDTO);
+
+        verify(accountRepository, times(1)).save(existingAccount);
+
+        assertEquals(newLoginId, updatedAccountDTO.getId());
+        assertEquals("newEmail@example.org", updatedAccountDTO.getEmail());
+        assertEquals(Status.ACTIVE, updatedAccountDTO.getStatus());
+    }
+
+    @Test
+    void testUpdateAccountWithDuplicateLoginId() {
+        // Given
+        String existingLoginId = "oldId";
+        String newLoginId = "id";
+
+        AccountUpdateRequestDTO updateRequestDTO = new AccountUpdateRequestDTO(newLoginId, "newPassword", "newEmail@example.org", Status.ACTIVE);
+        Account existingAccount = new Account(1L, existingLoginId, "oldPassword", "oldEmail@example.org", Status.INACTIVE);
+
+        when(accountRepository.findByLoginId(existingLoginId)).thenReturn(existingAccount);
+
+        when(accountRepository.existsAccountsByLoginId(newLoginId)).thenReturn(true);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            accountService.updateAccount(existingLoginId, updateRequestDTO);
+        });
+
+        assertEquals("이미 있는 로그인 아이디입니다.", exception.getMessage());
+
+        verify(accountRepository, times(0)).save(any(Account.class));
+    }
+
 }

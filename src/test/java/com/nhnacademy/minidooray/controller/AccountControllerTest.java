@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,7 +48,7 @@ public class AccountControllerTest {
         AccountListDTO account2 = new AccountListDTO("member2 id", "example2@example.org");
         List<AccountListDTO> accounts = Arrays.asList(account1, account2);
 
-        Mockito.when(accountService.getAllAccounts()).thenReturn(accounts);
+        when(accountService.getAllAccounts()).thenReturn(accounts);
 
         // MockMvc로 요청 보내기
         mockMvc.perform(get("/api/accounts")
@@ -70,7 +70,7 @@ public class AccountControllerTest {
         AccountListDTO account2 = new AccountListDTO("member2 id", "example2@example.org");
         List<AccountListDTO> accounts = Arrays.asList(account1, account2);
 
-        Mockito.when(accountService.getAllActiveAccountsLike(anyString())).thenReturn(accounts);
+        when(accountService.getAllActiveAccountsLike(anyString())).thenReturn(accounts);
 
         mockMvc.perform(get("/api/accounts")
                         .param("id", "id")  // id 파라미터 추가
@@ -108,6 +108,40 @@ public class AccountControllerTest {
 
         // 서비스 호출 검증
         verify(accountService, Mockito.times(1)).deleteAccount("id");
+    }
+
+    @Test
+    void testUpdateAccount() throws Exception {
+        // Given
+        String existingId = "oldId";
+        AccountUpdateRequestDTO updateRequestDTO = new AccountUpdateRequestDTO("newId", "newPassword", "newEmail@example.org", Status.ACTIVE);
+        AccountUpdateDTO expectedResponseDTO = new AccountUpdateDTO("newId", "newEmail@example.org", Status.ACTIVE);
+
+        when(accountService.updateAccount(eq(existingId), any(AccountUpdateRequestDTO.class)))
+                .thenReturn(expectedResponseDTO);
+
+        mockMvc.perform(put("/api/accounts/{id}", existingId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("newId"))
+                .andExpect(jsonPath("$.email").value("newEmail@example.org"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+    }
+
+    @Test
+    void testGetAccountById() throws Exception {
+        String accountId = "id123";
+        AccountDetailDTO expectedResponse = new AccountDetailDTO("id123", "password123", "example@example.org");
+
+        when(accountService.getAccountById(accountId)).thenReturn(expectedResponse);
+
+        mockMvc.perform(get("/api/accounts/{id}", accountId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("id123"))
+                .andExpect(jsonPath("$.password").value("password123"))
+                .andExpect(jsonPath("$.email").value("example@example.org"));
     }
 
 }
