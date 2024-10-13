@@ -62,13 +62,13 @@ public class AccountService {
     @Transactional
     public AccountUpdateDTO updateAccount(String id, AccountUpdateRequestDTO accountUpdateRequestDTO) { //계정 정보 업데이트 (id,password,email,state)
         Account account = accountRepository.findByLoginId(id);
+        if (accountRepository.existsAccountsByLoginId(account.getLoginId())) {
+            throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
+        }
         account.setLoginId(accountUpdateRequestDTO.getId());//아이디 변경
         account.setPassword(accountUpdateRequestDTO.getPassword()); //비밀번호 변경
         account.setEmail(accountUpdateRequestDTO.getEmail()); //이메일 변경
         account.setStatus(accountUpdateRequestDTO.getStatus()); //상태 변경
-        if (accountRepository.existsAccountsByLoginId(account.getLoginId())) {
-            throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
-        }
         accountRepository.save(account); //해당 PKId에 그대로 저장
 
         return new AccountUpdateDTO(account.getLoginId(),account.getEmail(),account.getStatus());
