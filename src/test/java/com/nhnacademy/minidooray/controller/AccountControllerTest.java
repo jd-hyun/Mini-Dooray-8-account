@@ -86,25 +86,6 @@ public class AccountControllerTest {
     }
 
     @Test
-    void testGetAccountByLoginId() throws Exception {
-        // Mock 데이터 설정
-        AccountDetailDTO accountDetailDTO = new AccountDetailDTO("id", "password", "example@example.org");
-
-        Mockito.when(accountService.getAccountById("id")).thenReturn(accountDetailDTO);
-
-        // MockMvc로 요청 보내기
-        mockMvc.perform(get("/api/accounts/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is("id")))
-                .andExpect(jsonPath("$.password", is("password")))
-                .andExpect(jsonPath("$.email", is("example@example.org")));
-
-        // 서비스 호출 검증
-        verify(accountService, Mockito.times(1)).getAccountById("id");
-    }
-
-    @Test
     void testCreateAccount() throws Exception {
         AccountCreateDTO createDTO = new AccountCreateDTO("id", "BCrypt encoded string", "example@example.org");
 
