@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Account { //@Columns로 이름 지정해주기
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

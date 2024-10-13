@@ -5,14 +5,11 @@ import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.entity.Status;
 import com.nhnacademy.minidooray.entity.Account;
 import com.nhnacademy.minidooray.repository.AccountRepository;
-import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -33,25 +30,25 @@ public class AccountService {
 
     public List<AccountListDTO> getAllAccounts() { //모든 계정 정보 조회 활성 상태인 애들만 부르기
         return accountRepository.findByStatus(Status.ACTIVE).stream() //활성상태인 애들만 모아서 보내주기
-                .map(account -> new AccountListDTO(account.getLoginId(), account.getEmail())) // AccountListDTO로 변환
+                .map(account -> new AccountListDTO(account.getLoginId(), account.getEmail()))
                 .collect(Collectors.toList()); //리스트화
     }
 
 
     // 검색해서 멤버 찾아오기 기능 추가
     public List<AccountListDTO> getAllActiveAccountsLike(String id) {
-        return accountRepository.findByStatusAndLoginIdLike(Status.ACTIVE, id).stream() //아이디가 비슷한 애들 중, 활성상태인 애들만 모아서 보내주기
-                .map(account -> new AccountListDTO(account.getLoginId(), account.getEmail())) // AccountListDTO로 변환
-                .collect(Collectors.toList()); //리스트화
+        return accountRepository.findByStatusAndLoginIdLike(Status.ACTIVE, id).stream()
+                .map(account -> new AccountListDTO(account.getLoginId(), account.getEmail()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public void createAccount(AccountCreateDTO accountCreateDTO) { // 계정 생성
+    public void createAccount(AccountCreateDTO accountCreateDTO) {
         Account account = new Account();
         account.setLoginId(accountCreateDTO.getId());
         account.setPassword(accountCreateDTO.getPassword());
         account.setEmail(accountCreateDTO.getEmail());
-        account.setStatus(Status.ACTIVE); // 기본 상태 설정(활성)
+        account.setStatus(Status.ACTIVE);
         if (accountRepository.existsAccountsByLoginId(account.getLoginId())) {
             throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
         }

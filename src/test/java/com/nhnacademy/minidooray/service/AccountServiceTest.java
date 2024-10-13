@@ -8,7 +8,6 @@ import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.entity.Account;
 import com.nhnacademy.minidooray.entity.Status;
 import com.nhnacademy.minidooray.repository.AccountRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -139,9 +137,7 @@ public class AccountServiceTest {
 
         when(accountRepository.existsAccountsByLoginId(accountCreateDTO.getId())).thenReturn(true);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.createAccount(accountCreateDTO);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> accountService.createAccount(accountCreateDTO));
 
         assertEquals("이미 있는 로그인 아이디입니다.", exception.getMessage());
 
@@ -183,9 +179,7 @@ public class AccountServiceTest {
 
         when(accountRepository.existsAccountsByLoginId(newLoginId)).thenReturn(true);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            accountService.updateAccount(existingLoginId, updateRequestDTO);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> accountService.updateAccount(existingLoginId, updateRequestDTO));
 
         assertEquals("이미 있는 로그인 아이디입니다.", exception.getMessage());
 
