@@ -28,7 +28,7 @@ public class AccountController {
 
     // (GET) ID로 단일 회원 정보 조회
     @GetMapping("/{id}")
-    public AccountDetailDTO getAccountById(@PathVariable Long id) { //id,password,email
+    public AccountDetailDTO getAccountById(@PathVariable String id) { //id,password,email
         AccountDetailDTO accountDetailDTO = accountService.getAccountById(id);
         return accountDetailDTO;
     }

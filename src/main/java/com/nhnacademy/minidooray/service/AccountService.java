@@ -7,6 +7,7 @@ import com.nhnacademy.minidooray.entity.Account;
 import com.nhnacademy.minidooray.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -16,16 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AccountService {
 //전부 DTO return 하도록 수정
 
     private final AccountRepository accountRepository;
 
 
-    public AccountDetailDTO getAccountById(Long id) { //계정 단일 정보 조회
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-        // Account 엔티티가 존재하는지 확인하고, 없으면 예외 처리
-        Account account = optionalAccount.orElseThrow(() -> new NoSuchElementException("해당 ID의 계정을 찾을 수 없습니다."));
+    public AccountDetailDTO getAccountById(String id) { //계정 단일 정보 조회
+        Account account = accountRepository.findByLoginId(id);
         // 변환된 DTO 반환
         return new AccountDetailDTO(account.getLoginId(),account.getPassword(),account.getEmail());
     }
@@ -44,7 +44,8 @@ public class AccountService {
                 .collect(Collectors.toList()); //리스트화
     }
 
-    public void/*AccountDetailDTO*/ createAccount(AccountCreateDTO accountCreateDTO) { // 계정 생성
+    @Transactional
+    public void createAccount(AccountCreateDTO accountCreateDTO) { // 계정 생성
         Account account = new Account();
         account.setLoginId(accountCreateDTO.getId());
         account.setPassword(accountCreateDTO.getPassword());
@@ -52,9 +53,9 @@ public class AccountService {
         account.setStatus(Status.ACTIVE); // 기본 상태 설정(활성)
         accountRepository.save(account);
 
-        //return new AccountDetailDTO(savedAccount.getId(), savedAccount.getPassword(), savedAccount.getEmail()); (body를 줘야하는 경우)
     }
 
+    @Transactional
     public AccountUpdateDTO updateAccount(Long id, AccountUpdateRequestDTO accountUpdateRequestDTO) { //계정 정보 업데이트 (id,password,email,state)
         Optional<Account> optionalAccount = accountRepository.findById(id);
         Account account = optionalAccount.orElseThrow(() -> new NoSuchElementException("해당 ID의 계정을 찾을 수 없습니다."));
@@ -67,6 +68,7 @@ public class AccountService {
         return new AccountUpdateDTO(account.getLoginId(),account.getEmail(),account.getStatus());
     }
 
+    @Transactional
     public void deleteAccount(Long id) {
         accountRepository.deleteById(id); //삭제
     }
