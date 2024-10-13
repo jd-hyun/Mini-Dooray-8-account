@@ -1,0 +1,45 @@
+### accounts 생성(1)
+POST http://localhost:8081/api/accounts
+Content-Type: application/json
+
+{
+  "id": "id",
+  "password": "BCrypt encoded string",
+  "email": "example@example.org"
+}
+
+### accounts 생성(2)
+POST http://localhost:8081/api/accounts
+Content-Type: application/json
+
+{
+  "id": "id2",
+  "password": "BCrypt encoded string",
+  "email": "example@example.org"
+}
+
+### accounts 전체 조회
+GET http://localhost:8081/api/accounts
+
+
+### accounts{id} 조회
+GET http://localhost:8081/api/accounts/id
+
+### accounts?like={memberid} 조회
+GET http://localhost:8081/api/accounts?like=id
+
+
+### accounts{id} 수정
+PUT http://localhost:8081/api/accounts/id
+Content-Type: application/json
+
+{
+  "id" : "newId",
+  "password": "BCrypt encoded string",
+  "email": "example@example.org",
+  "status" : "ACTIVE"
+}
+
+### accounts{id} 삭제
+DELETE http://localhost:8081/api/accounts/id
+
