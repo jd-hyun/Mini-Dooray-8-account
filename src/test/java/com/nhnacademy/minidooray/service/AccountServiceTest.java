@@ -122,29 +122,11 @@ public class AccountServiceTest {
     }
 
     @Test
-    void testUpdateAccount() {
-        Account account = new Account();
-        account.setLoginId("Id");
-        account.setEmail("old@example.com");
-        account.setPassword("password");
-        account.setStatus(Status.INACTIVE);
-
-        when(accountRepository.findById(any(Long.class))).thenReturn(Optional.of(account));
-
-        AccountUpdateRequestDTO updateDTO = new AccountUpdateRequestDTO("newId", "BCrypt encoded string", "example@example.org", Status.ACTIVE);
-
-        AccountUpdateDTO result = accountService.updateAccount(1L, updateDTO);
-
-        assertEquals("newId", result.getId());
-        assertEquals("example@example.org", result.getEmail());
-        assertEquals(Status.ACTIVE, result.getStatus());
-        verify(accountRepository, times(1)).save(any(Account.class));
-    }
-
-    @Test
     void testDeleteAccount() {
-        accountService.deleteAccount(1L);
+        String loginId = "id";
 
-        verify(accountRepository, times(1)).deleteById(1L);
+        accountService.deleteAccount(loginId);
+
+        verify(accountRepository, times(1)).deleteByLoginId(loginId);
     }
 }

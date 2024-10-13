@@ -5,6 +5,7 @@ import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.entity.Status;
 import com.nhnacademy.minidooray.entity.Account;
 import com.nhnacademy.minidooray.repository.AccountRepository;
+import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,26 +52,31 @@ public class AccountService {
         account.setPassword(accountCreateDTO.getPassword());
         account.setEmail(accountCreateDTO.getEmail());
         account.setStatus(Status.ACTIVE); // 기본 상태 설정(활성)
+        if (accountRepository.existsAccountsByLoginId(account.getLoginId())) {
+            throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
+        }
         accountRepository.save(account);
 
     }
 
     @Transactional
-    public AccountUpdateDTO updateAccount(Long id, AccountUpdateRequestDTO accountUpdateRequestDTO) { //계정 정보 업데이트 (id,password,email,state)
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-        Account account = optionalAccount.orElseThrow(() -> new NoSuchElementException("해당 ID의 계정을 찾을 수 없습니다."));
+    public AccountUpdateDTO updateAccount(String id, AccountUpdateRequestDTO accountUpdateRequestDTO) { //계정 정보 업데이트 (id,password,email,state)
+        Account account = accountRepository.findByLoginId(id);
         account.setLoginId(accountUpdateRequestDTO.getId());//아이디 변경
         account.setPassword(accountUpdateRequestDTO.getPassword()); //비밀번호 변경
         account.setEmail(accountUpdateRequestDTO.getEmail()); //이메일 변경
         account.setStatus(accountUpdateRequestDTO.getStatus()); //상태 변경
+        if (accountRepository.existsAccountsByLoginId(account.getLoginId())) {
+            throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
+        }
         accountRepository.save(account); //해당 PKId에 그대로 저장
 
         return new AccountUpdateDTO(account.getLoginId(),account.getEmail(),account.getStatus());
     }
 
     @Transactional
-    public void deleteAccount(Long id) {
-        accountRepository.deleteById(id); //삭제
+    public void deleteAccount(String id) {
+        accountRepository.deleteByLoginId(id); //삭제
     }
 
 }

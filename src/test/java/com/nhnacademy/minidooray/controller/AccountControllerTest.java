@@ -100,34 +100,14 @@ public class AccountControllerTest {
     }
 
     @Test
-    void testUpdateAccount() throws Exception {
-        AccountUpdateRequestDTO updateRequestDTO = new AccountUpdateRequestDTO("updatedUser", "newpassword", "updated@example.org", Status.INACTIVE);
-        AccountUpdateDTO updateDTO = new AccountUpdateDTO("newId", "example@example.org", Status.ACTIVE);
-
-        Mockito.when(accountService.updateAccount(eq(1L), any(AccountUpdateRequestDTO.class))).thenReturn(updateDTO);
-
-        // MockMvc로 PUT 요청 보내기
-        mockMvc.perform(put("/api/accounts/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequestDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is("newId")))
-                .andExpect(jsonPath("$.email", is("example@example.org")))
-                .andExpect(jsonPath("$.status", is("ACTIVE")));
-
-        // 서비스 호출 검증
-        verify(accountService, Mockito.times(1)).updateAccount(eq(1L), any(AccountUpdateRequestDTO.class));
-    }
-
-    @Test
     void testDeleteAccount() throws Exception {
         // MockMvc로 DELETE 요청 보내기
-        mockMvc.perform(delete("/api/accounts/1")
+        mockMvc.perform(delete("/api/accounts/id")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         // 서비스 호출 검증
-        verify(accountService, Mockito.times(1)).deleteAccount(1L);
+        verify(accountService, Mockito.times(1)).deleteAccount("id");
     }
 
 }

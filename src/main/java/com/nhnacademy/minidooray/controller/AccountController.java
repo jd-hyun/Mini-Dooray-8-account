@@ -41,14 +41,14 @@ public class AccountController {
 
     // (PUT) 회원 정보 수정
     @PutMapping("/{id}")
-    public AccountUpdateDTO updateAccount(@PathVariable Long id, @Valid @RequestBody AccountUpdateRequestDTO accountUpdateRequestDTO) {
+    public AccountUpdateDTO updateAccount(@PathVariable String id, @Valid @RequestBody AccountUpdateRequestDTO accountUpdateRequestDTO) {
         AccountUpdateDTO accountUpdateDTO = accountService.updateAccount(id, accountUpdateRequestDTO);
         return accountUpdateDTO;
     }
 
     // (DELETE) 회원 삭제
     @DeleteMapping("/{id}")
-    public void deleteAccount(@PathVariable Long id) {//리턴값 없음 완료했다는 것만 알려주기
+    public void deleteAccount(@PathVariable String id) {//리턴값 없음 완료했다는 것만 알려주기
         accountService.deleteAccount(id);
     }
 }
