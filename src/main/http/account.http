@@ -26,7 +26,7 @@ GET http://localhost:8081/api/accounts
 GET http://localhost:8081/api/accounts/id
 
 ### accounts?like={memberid} 조회
-GET http://localhost:8081/api/accounts?like=id
+GET http://localhost:8081/api/accounts?like=qw
 
 
 ### accounts{id} 수정
@@ -41,5 +41,5 @@ Content-Type: application/json
 }
 
 ### accounts{id} 삭제
-DELETE http://localhost:8081/api/accounts/id
+DELETE http://localhost:8081/api/accounts/id2
 
