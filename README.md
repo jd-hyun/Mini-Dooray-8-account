@@ -1,1 +1,1 @@
-# Mini-Dooray-8-account
+# eureka client 구현 완료
