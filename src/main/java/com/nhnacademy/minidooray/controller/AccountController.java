@@ -5,6 +5,7 @@ import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,12 +30,12 @@ public class AccountController {
     // (GET) ID로 단일 회원 정보 조회
     @GetMapping("/{id}")
     public AccountDetailDTO getAccountById(@PathVariable String id) { //id,password,email
-        AccountDetailDTO accountDetailDTO = accountService.getAccountById(id);
-        return accountDetailDTO;
+        return accountService.getAccountById(id);
     }
 
     // (POST) 회원 생성
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     public void createAccount(@Valid @RequestBody AccountCreateDTO accountCreateDTO) { //리턴 값 없음 생성했다는 것만 알려주기
         accountService.createAccount(accountCreateDTO);
     }
@@ -42,8 +43,7 @@ public class AccountController {
     // (PUT) 회원 정보 수정
     @PutMapping("/{id}")
     public AccountUpdateDTO updateAccount(@PathVariable String id, @Valid @RequestBody AccountUpdateRequestDTO accountUpdateRequestDTO) {
-        AccountUpdateDTO accountUpdateDTO = accountService.updateAccount(id, accountUpdateRequestDTO);
-        return accountUpdateDTO;
+        return accountService.updateAccount(id, accountUpdateRequestDTO);
     }
 
     // (DELETE) 회원 삭제

@@ -4,6 +4,8 @@ import com.nhnacademy.minidooray.DTO.*;
 import com.nhnacademy.minidooray.DTO.request.AccountUpdateRequestDTO;
 import com.nhnacademy.minidooray.entity.Status;
 import com.nhnacademy.minidooray.entity.Account;
+import com.nhnacademy.minidooray.exception.AccountAlreadyExistsException;
+import com.nhnacademy.minidooray.exception.AccountNotFoundException;
 import com.nhnacademy.minidooray.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,8 +24,9 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
 
-    public AccountDetailDTO getAccountById(String id) { //계정 단일 정보 조회
-        Account account = accountRepository.findByLoginId(id);
+    public AccountDetailDTO getAccountById(String id) {
+        Account account = accountRepository.findByLoginId(id)
+                .orElseThrow(() -> new AccountNotFoundException("account not found"));
         // 변환된 DTO 반환
         return new AccountDetailDTO(account.getLoginId(),account.getPassword(),account.getEmail());
     }
@@ -49,8 +52,9 @@ public class AccountService {
         account.setPassword(accountCreateDTO.getPassword());
         account.setEmail(accountCreateDTO.getEmail());
         account.setStatus(Status.ACTIVE);
+        System.out.println(account.getLoginId());
         if (accountRepository.existsAccountsByLoginId(account.getLoginId())) {
-            throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
+            throw new AccountAlreadyExistsException("이미 있는 로그인 아이디입니다.");
         }
         accountRepository.save(account);
 
@@ -58,22 +62,21 @@ public class AccountService {
 
     @Transactional
     public AccountUpdateDTO updateAccount(String id, AccountUpdateRequestDTO accountUpdateRequestDTO) { //계정 정보 업데이트 (id,password,email,state)
-        Account account = accountRepository.findByLoginId(id);
-        if (accountRepository.existsAccountsByLoginId(accountUpdateRequestDTO.getId())) {
-            throw new IllegalArgumentException("이미 있는 로그인 아이디입니다.");
-        }
+        Account account = accountRepository.findByLoginId(id)
+                .orElseThrow(() -> new AccountNotFoundException("account not found"));
+
         account.setLoginId(accountUpdateRequestDTO.getId());//아이디 변경
         account.setPassword(accountUpdateRequestDTO.getPassword()); //비밀번호 변경
         account.setEmail(accountUpdateRequestDTO.getEmail()); //이메일 변경
         account.setStatus(accountUpdateRequestDTO.getStatus()); //상태 변경
-        accountRepository.save(account); //해당 PKId에 그대로 저장
 
         return new AccountUpdateDTO(account.getLoginId(),account.getEmail(),account.getStatus());
     }
 
     @Transactional
     public void deleteAccount(String id) {
+        accountRepository.findByLoginId(id)
+                .orElseThrow(() -> new AccountNotFoundException("account not found"));
         accountRepository.deleteByLoginId(id); //삭제
     }
-
 }
